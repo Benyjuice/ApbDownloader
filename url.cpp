@@ -12,24 +12,24 @@ bool Url::load(QString input)
     return true;
 }
 
-bool Url::getKey(QString input)
-{
-//    int curt_pos,end_pos;
-//    curt_pos = input.indexOf(METAID)+QString(METAID).length();
-//    QString temp;
-//    end_pos=curt_pos;
-//    for (;end_pos<=curt_pos+META_MAX;end_pos++) {
-//        temp=input.mid(end_pos,1);
-//        if(temp == "&")
-//            break;
-//        if (end_pos == curt_pos+META_MAX) {
-//            return false;
-//        }
-//    }
-//    metaId=input.mid(curt_pos+1,end_pos-curt_pos-2);
-//    objID=metaId;
-    return true;
-}
+//bool Url::getKey(QString input)
+//{
+////    int curt_pos,end_pos;
+////    curt_pos = input.indexOf(METAID)+QString(METAID).length();
+////    QString temp;
+////    end_pos=curt_pos;
+////    for (;end_pos<=curt_pos+META_MAX;end_pos++) {
+////        temp=input.mid(end_pos,1);
+////        if(temp == "&")
+////            break;
+////        if (end_pos == curt_pos+META_MAX) {
+////            return false;
+////        }
+////    }
+////    metaId=input.mid(curt_pos+1,end_pos-curt_pos-2);
+////    objID=metaId;
+//    return true;
+//}
 
 bool Url::setHeigth(Quality qu)
 {

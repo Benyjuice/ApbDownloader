@@ -13,6 +13,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     manager = new QNetworkAccessManager(this);
+    ui->progressBar->hide();
     urlList.clear();
     connect(ui->btnConvert,SIGNAL(clicked()),this,SLOT(onClickConvert()));
     connect(ui->btnDownload,SIGNAL(clicked()),this,SLOT(onClickDownload()));
@@ -102,9 +103,9 @@ void MainWindow::onClickDownload()
         return;
     }
 
-    QString dir=QDir::homePath()+"/%1";
+    QString dir=QDir::homePath();
     QString fileName =  QFileDialog::getSaveFileName(this, tr("Save File"),
-                                                     dir.arg("Untitled.pdf"),
+                                                     dir+("/Untitled.pdf"),
                                                      tr("pdf (*.pdf)"));
 
     if (fileName.isEmpty()) {
@@ -116,6 +117,8 @@ void MainWindow::onClickDownload()
     pdf_writer->setResolution(c_url.getPPI());
     p=new QPainter(pdf_writer);
     firstpage = true;
+    ui->progressBar->show();
+    ui->progressBar->setValue(0);
     manager->get(QNetworkRequest(QUrl(urlList.at(0))));
 }
 
@@ -136,6 +139,7 @@ void MainWindow::netReply(QNetworkReply *reply)
         delete pdf_writer;
         ui->textBrowser->setText(QString("Page:%1 download finish.").arg(index));
         ui->textBrowser->append("Download finished");
+        ui->progressBar->hide();
         ui->statusBar->clearMessage();
         ui->btnConvert->setDisabled(false);
         index = 0;
@@ -143,6 +147,7 @@ void MainWindow::netReply(QNetworkReply *reply)
     } else {
         manager->get(QNetworkRequest(QUrl(urlList.at(index))));
         ui->statusBar->showMessage(QString("Downloading...%%1").arg(index*100/urlList.length()));
+        ui->progressBar->setValue(index*100/urlList.length());
         p->drawPixmap(0,0,pix);
         pdf_writer->newPage();
         ui->textBrowser->setText(QString("Page:%1 download finish.").arg(index));
