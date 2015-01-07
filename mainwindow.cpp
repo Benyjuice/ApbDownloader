@@ -6,6 +6,7 @@
 #include "QFileDialog"
 #include "QDir"
 #include "QMessageBox"
+#include "about.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -13,16 +14,32 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     manager = new QNetworkAccessManager(this);
+    ui->progressBar->hide();
     urlList.clear();
     connect(ui->btnConvert,SIGNAL(clicked()),this,SLOT(onClickConvert()));
     connect(ui->btnDownload,SIGNAL(clicked()),this,SLOT(onClickDownload()));
     connect(manager,SIGNAL(finished(QNetworkReply*)),this,SLOT(netReply(QNetworkReply*)));
+    connect(ui->menuAbout,SIGNAL(triggered(QAction*)),this,SLOT(showAbout()));
 }
 
 MainWindow::~MainWindow()
 {
-    delete ui;
+    if(!manager)
+        delete manager;
+    if(!ui)
+        delete ui;
+    if(!pdf_writer)
+        delete pdf_writer;
+    if(!p)
+        delete p;
+    if(!about)
+        delete about;
 }
+
+//MainWindow::~MainWindow()
+//{
+//    delete ui;
+//}
 
 void MainWindow::onClickConvert()
 {
@@ -58,37 +75,7 @@ void MainWindow::onClickConvert()
     for(int i=pageStart;i<=pageStart+pageLen-1;i++) {
         urlList.append(c_url.getUrl()+QString("&pageid=%1").arg(i));
     }
-//    if(!(url.contains("pageid="))) {
-//        ui->textBrowser->append(tr("Unrecogenized url.\nPlease find and Copy thr url use Chrome.\n"));
-//        return;
-//    }
 
-//    page_start=ui->pageStart->text().toInt();
-//    page_end=ui->pageLen->text().toInt()+page_start-1;
-//    if(page_start <= 0 || page_end <= 0) {
-//        ui->textBrowser->append("Page varient error!");
-//        return;
-//    }
-
-//    int pre_pos,cut_pos;
-//    pre_pos=url.indexOf("pageid");
-//    pre_pos+=7;
-//    cut_pos=pre_pos;
-
-//    for(int i=1;i<=10;i++) {
-//       temp=url.mid(pre_pos++,1);
-//       if(temp=="&")
-//           break;
-//       if(i==10) {
-//           ui->textBrowser->append("pageid is to long");
-//           return;
-//       }
-//    }
-//    url.replace(cut_pos,pre_pos-cut_pos-1,"%1");
-//    for(int i=page_start;i<=page_end;i++) {
-//        ui->statusBar->showMessage(QString("Conveting..."));
-//        urlList.append(url.arg(i));
-//    }
     ui->statusBar->clearMessage();
 
     index=0;
@@ -102,9 +89,9 @@ void MainWindow::onClickDownload()
         return;
     }
 
-    QString dir=QDir::homePath()+"/%1";
+    QString dir=QDir::homePath();
     QString fileName =  QFileDialog::getSaveFileName(this, tr("Save File"),
-                                                     dir.arg("Untitled.pdf"),
+                                                     dir+("/Untitled.pdf"),
                                                      tr("pdf (*.pdf)"));
 
     if (fileName.isEmpty()) {
@@ -116,6 +103,8 @@ void MainWindow::onClickDownload()
     pdf_writer->setResolution(c_url.getPPI());
     p=new QPainter(pdf_writer);
     firstpage = true;
+    ui->progressBar->show();
+    ui->progressBar->setValue(0);
     manager->get(QNetworkRequest(QUrl(urlList.at(0))));
 }
 
@@ -136,6 +125,7 @@ void MainWindow::netReply(QNetworkReply *reply)
         delete pdf_writer;
         ui->textBrowser->setText(QString("Page:%1 download finish.").arg(index));
         ui->textBrowser->append("Download finished");
+        ui->progressBar->hide();
         ui->statusBar->clearMessage();
         ui->btnConvert->setDisabled(false);
         index = 0;
@@ -143,8 +133,16 @@ void MainWindow::netReply(QNetworkReply *reply)
     } else {
         manager->get(QNetworkRequest(QUrl(urlList.at(index))));
         ui->statusBar->showMessage(QString("Downloading...%%1").arg(index*100/urlList.length()));
+        ui->progressBar->setValue(index*100/urlList.length());
         p->drawPixmap(0,0,pix);
         pdf_writer->newPage();
         ui->textBrowser->setText(QString("Page:%1 download finish.").arg(index));
     }
+}
+
+void MainWindow::showAbout()
+{
+
+    about = new About(0);
+    about->show();
 }

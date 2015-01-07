@@ -14,9 +14,15 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    url.cpp
+    url.cpp \
+    about.cpp
 
 HEADERS  += mainwindow.h \
-    url.h
+    url.h \
+    about.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    about.ui
+
+RESOURCES += \
+    res.qrc

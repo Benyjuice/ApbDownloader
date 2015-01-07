@@ -11,6 +11,7 @@
 #include <QString>
 #include <QList>
 #include "url.h"
+#include "about.h"
 
 namespace Ui {
 class MainWindow;
@@ -28,6 +29,7 @@ public slots:
     void onClickConvert();
     void onClickDownload();
     void netReply(QNetworkReply *);
+    void showAbout();
 private:
     Ui::MainWindow *ui;
     QPdfWriter *pdf_writer;
@@ -37,6 +39,7 @@ private:
     int index;
     bool firstpage;
     Url c_url;
+    About *about;
 };
 
 #endif // MAINWINDOW_H

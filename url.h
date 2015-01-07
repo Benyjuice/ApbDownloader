@@ -45,7 +45,7 @@ public:
         return ppi;
     }
 
-    bool setHeigth(Quality qu );
+    bool setHeigth(Quality qu);
 
     bool load(QString);
 private:
@@ -55,7 +55,6 @@ private:
     int width;
     int height;
     int ppi;
-    bool getKey(QString);
 };
 
 #endif // URL_H
